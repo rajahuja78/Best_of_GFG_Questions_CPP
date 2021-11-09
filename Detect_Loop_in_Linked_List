@@ -1,0 +1,83 @@
+// C++ program to detect loop in a linked list
+#include <bits/stdc++.h>
+using namespace std;
+
+/* Link list node */
+class Node {
+public:
+	int data;
+	Node* next;
+};
+
+void push(Node** head_ref, int new_data)
+{
+    Node* new_node = new Node();
+    new_node->data = new_data;
+    new_node->next = (*head_ref);
+	(*head_ref) = new_node;
+}
+/*Method 1: Floyd’s Cycle-Finding Algorithm  Using 2 Pointers
+Time complexity: O(n). Only one traversal of the loop is needed.
+Auxiliary Space:O(1). There is no space required.
+*/
+int detectLoop(Node* list)
+{
+	Node *slow_p = list, *fast_p = list;
+
+	while (slow_p && fast_p && fast_p->next) {
+		slow_p = slow_p->next;
+		fast_p = fast_p->next->next;
+		if (slow_p == fast_p) {
+			return 1;
+		}
+	}
+	return 0;
+}
+/*
+Method 2: Hashing - store the node which we have visited and 
+if we find a node already visited then loop exist
+Time complexity: O(n). One Traversal
+Auxiliary Space: O(n). n is the space required to store the value in hashmap.
+*/
+int detectLoopUsingHash(Node* list)
+{
+	unordered_set<Node*> sNode;
+	
+	while(list!=NULL)
+	{
+	    if(sNode.find(list) != sNode.end())
+	        return 1;
+	    sNode.insert(list);
+	    list = list->next;
+	}
+	
+	return 0;
+}
+
+/* Driver code*/
+int main()
+{
+	Node* head = NULL;
+
+	push(&head, 20);
+	push(&head, 4);
+	push(&head, 15);
+	push(&head, 10);
+
+	/* Create a loop for testing */
+	head->next->next->next->next = head;
+	if (detectLoop(head))
+		cout << "Loop found\n";
+	else
+		cout << "No Loop\n";
+	
+	/* Remove loop for testing*/
+	head->next->next->next->next = NULL;
+
+	if (detectLoopUsingHash(head))
+		cout << "Loop found\n";
+	else
+		cout << "No Loop\n";
+	
+	return 0;
+}
